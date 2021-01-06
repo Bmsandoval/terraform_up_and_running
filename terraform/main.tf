@@ -29,6 +29,17 @@ data "terraform_remote_state" "load_balancer" {
   }
 }
 
+data "terraform_remote_state" "builds_bucket" {
+  backend = "s3"
+  workspace = terraform.workspace
+
+  config = {
+    bucket = "splitnote-remote-state-bucket"
+    key = "builds_bucket/terraform.tfstate"
+    region = "us-west-1"
+  }
+}
+
 provider "aws" {
   profile = "default"
   region  = local.region

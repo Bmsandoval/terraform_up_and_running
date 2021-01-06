@@ -61,8 +61,8 @@ EOF
 }
 
 # Create a new policy and attach it to the role
-resource "aws_iam_role_policy" "iam-role-policy" {
-  name = "policy"
+resource "aws_iam_role_policy" "builds-bucket-access-policy" {
+  name = "builds-bucket-access-policy"
   role = aws_iam_role.iam-role.id
 
   policy = <<-EOF
@@ -72,9 +72,9 @@ resource "aws_iam_role_policy" "iam-role-policy" {
       {
         "Effect": "Allow",
         "Action": [
-          "s3:GetObject"
+          "s3:*"
         ],
-        "Resource": ["arn:aws:s3:::${local.environment}-splitnote-builds-bucket/*"]
+        "Resource": ["arn:aws:s3:::*"]
       }
     ]
   }
