@@ -22,18 +22,27 @@ data "aws_vpc" "default" {
   default = true
 }
 
-data "aws_subnet_arns" "default" {
-
-
-  vpc_id = data.aws_vpc.default.id
-}
-
 provider "aws" {
   profile = "default"
   region  = local.region
 }
 
-variable "aws_region" {}
+data "terraform_remote_state" "builds_bucket" {
+  backend = "s3"
+  workspace = terraform.workspace
+
+  config = {
+    bucket = "splitnote-remote-state-bucket"
+    key = "builds_bucket/terraform.tfstate"
+    region = "us-west-1"
+  }
+}
+
+//provider "github" {
+//  token        = var.github_token
+//  organization = var.github_repo_owner
+//  base_url     = "https://api.github.com/users/bmsandoval"
+//}
 
 // because reasons
 data "aws_region" "current" {}
@@ -43,7 +52,7 @@ data "aws_caller_identity" "current" {}
 locals {
   company = "splitnote"
   account_id = data.aws_caller_identity.current.account_id
-  pipeline_project_name = "terraform_up_and_running"
+  pipeline_project_name = "terraform-up-and-running"
   region = var.aws_region
   environment = terraform.workspace
 }

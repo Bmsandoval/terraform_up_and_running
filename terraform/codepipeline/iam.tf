@@ -20,9 +20,8 @@ EOF
 }
 
 resource "aws_iam_role_policy" "codepipeline_policy" {
-  name = "${local.environment}-codepipeline_policy"
+  name = "${local.environment}-codepipeline-role-policy"
   role = aws_iam_role.codepipeline_role.id
-
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -56,9 +55,8 @@ EOF
 ##################################################
 ############         CODEBUILD        ############
 ##################################################
-resource "aws_iam_role" "example" {
-  name = "example"
-
+resource "aws_iam_role" "codebuild_role" {
+  name = "${local.environment}-codebuild-role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -75,9 +73,9 @@ resource "aws_iam_role" "example" {
 EOF
 }
 
-resource "aws_iam_role_policy" "example" {
-  role = aws_iam_role.example.name
-
+resource "aws_iam_role_policy" "codebuild_role_policy" {
+  name = "${local.environment}-codebuild-role-policy"
+  role = aws_iam_role.codebuild_role.name
   policy = <<POLICY
 {
   "Version": "2012-10-17",
@@ -117,7 +115,7 @@ resource "aws_iam_role_policy" "example" {
       "Condition": {
         "StringEquals": {
           "ec2:Subnet": [
-            "${aws_default_subnet.default_az1.arn}",
+            "${aws_default_subnet.default_az1.arn}"
           ],
           "ec2:AuthorizedService": "codebuild.amazonaws.com"
         }
@@ -130,7 +128,9 @@ resource "aws_iam_role_policy" "example" {
       ],
       "Resource": [
         "${aws_s3_bucket.codebuild_bucket.arn}",
-        "${aws_s3_bucket.codebuild_bucket.arn}/*"
+        "${aws_s3_bucket.codebuild_bucket.arn}/*",
+        "${data.terraform_remote_state.builds_bucket.outputs.builds_s3_bucket_arn}",
+        "${data.terraform_remote_state.builds_bucket.outputs.builds_s3_bucket_arn}/*"
       ]
     }
   ]
