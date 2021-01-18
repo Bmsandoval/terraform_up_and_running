@@ -1,10 +1,14 @@
 release steps:
+
+do these steps once and only once:
 * apply the "remote_state" folder
+
+these steps don't cost much, they can stick around if you want:
 * apply the "builds_bucket" folder
 * apply the "load_balancer" folder
 * apply the "codepipeline" folder
 
-these steps should be destroyed when finished:
+these steps should be destroyed regularly to save money:
 * apply the top-level folder
 
 

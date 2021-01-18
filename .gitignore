@@ -1,4 +1,5 @@
 *.tfvars
+*rsa.pub
 !example.tfvars
 !default.tfvars
 .terraform

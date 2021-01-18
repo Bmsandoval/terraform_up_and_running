@@ -56,8 +56,7 @@ resource "aws_codepipeline" "pipeline" {
 
       configuration = {
         BucketName = data.terraform_remote_state.builds_bucket.outputs.builds_s3_bucket_name
-        ObjectKey  = "latest"
-        Extract    = false
+        Extract    = true
       }
     }
   }
@@ -71,7 +70,7 @@ resource "aws_codebuild_project" "build_project" {
   }
   environment {
     compute_type    = "BUILD_GENERAL1_SMALL"
-    image           = "aws/codebuild/standard:3.0"
+    image           = "aws/codebuild/amazonlinux2-x86_64-standard:2.0"
     type            = "LINUX_CONTAINER"
     privileged_mode = true
     environment_variable {
