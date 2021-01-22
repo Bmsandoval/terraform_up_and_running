@@ -7,47 +7,14 @@ terraform {
   }
 }
 
-terraform {
-  backend "s3" {
-    bucket = "splitnote-remote-state-bucket"
-    key = "codepipeline/terraform.tfstate"
-    region = "us-west-1"
-
-    dynamodb_table = "terraform-up-and-running-locks"
-    encrypt = true
-  }
-}
-
-data "aws_vpc" "default" {
-  default = true
-}
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+data "aws_vpc" "default" { default = true }
 
 provider "aws" {
   profile = "default"
   region  = local.region
 }
-
-data "terraform_remote_state" "builds_bucket" {
-  backend = "s3"
-  workspace = terraform.workspace
-
-  config = {
-    bucket = "splitnote-remote-state-bucket"
-    key = "builds_bucket/terraform.tfstate"
-    region = "us-west-1"
-  }
-}
-
-//provider "github" {
-//  token        = var.github_token
-//  organization = var.github_repo_owner
-//  base_url     = "https://api.github.com/users/bmsandoval"
-//}
-
-// because reasons
-data "aws_region" "current" {}
-// Used to get account_id
-data "aws_caller_identity" "current" {}
 
 locals {
   company = "splitnote"
@@ -62,5 +29,33 @@ resource "aws_default_subnet" "default_az1" {
 
   tags = {
     Name = "Default subnet for ${local.region}a"
+  }
+}
+
+// ******************************
+// **********  REMOTE STATE STORE
+// ******************************
+terraform {
+  backend "s3" {
+    bucket = "splitnote-remote-state-bucket"
+    key = "codepipeline/terraform.tfstate"
+    region = "us-west-1"
+
+    dynamodb_table = "terraform-up-and-running-locks"
+    encrypt = true
+  }
+}
+
+// ******************************
+// **********  REMOTE DATASOURCE
+// ******************************
+data "terraform_remote_state" "builds_bucket" {
+  backend = "s3"
+  workspace = terraform.workspace
+
+  config = {
+    bucket = "splitnote-remote-state-bucket"
+    key = "builds_bucket/terraform.tfstate"
+    region = "us-west-1"
   }
 }

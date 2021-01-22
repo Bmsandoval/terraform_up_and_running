@@ -2,6 +2,7 @@ release steps:
 
 do these steps once and only once:
 * apply the "remote_state" folder
+* apply the "database" folder
 
 these steps don't cost much, they can stick around if you want:
 * apply the "builds_bucket" folder
